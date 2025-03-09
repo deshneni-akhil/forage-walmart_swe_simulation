@@ -1,0 +1,111 @@
+@startuml
+
+' Entities
+entity Manufacturer {
+  * manufacturer_id (PK)
+  --
+  name
+}
+
+entity Product {
+  * product_id (PK)
+  --
+  name
+  manufacturer_id (FK) > Manufacturer
+  product_type
+}
+
+entity PetFood {
+  * product_id (PK, FK) > Product
+  --
+  weight
+  flavor
+  target_health_condition
+}
+
+entity PetToy {
+  * product_id (PK, FK) > Product
+  --
+  material
+  durability
+}
+
+entity PetApparel {
+  * product_id (PK, FK) > Product
+  --
+  color
+  size
+  care_instructions
+}
+
+entity Animal {
+  * animal_id (PK)
+  --
+  name
+}
+
+entity ProductAnimal {
+  * product_id (FK) > Product
+  * animal_id (FK) > Animal
+}
+
+entity Customer {
+  * customer_id (PK)
+  --
+  name
+  email
+}
+
+entity Transaction {
+  * transaction_id (PK)
+  --
+  customer_id (FK) > Customer
+  date
+}
+
+entity TransactionDetail {
+  * transaction_id (FK) > Transaction
+  * product_id (FK) > Product
+  --
+  quantity
+}
+
+entity Location {
+  * location_id (PK)
+  --
+  name
+  zip_code
+}
+
+entity Shipment {
+  * shipment_id (PK)
+  --
+  origin_id (FK) > Location
+  destination_id (FK) > Location
+  shipment_date
+}
+
+entity ShipmentDetail {
+  * shipment_id (FK) > Shipment
+  * product_id (FK) > Product
+  --
+  quantity
+}
+
+' Relationships
+Product ||--o{ PetFood : "1:1 Subtype (food)"
+Product ||--o{ PetToy : "1:1 Subtype (toy)"
+Product ||--o{ PetApparel : "1:1 Subtype (apparel)"
+Product }o--o{ Animal : "M:N via ProductAnimal"
+Product }o--|| Manufacturer : "M:1"
+
+Customer ||--o{ Transaction : "1:M"
+Transaction ||--o{ TransactionDetail : "1:M"
+TransactionDetail }o--|| Product : "M:1"
+
+Shipment ||--o{ ShipmentDetail : "1:M"
+ShipmentDetail }o--|| Product : "M:1"
+Shipment }o--|| Location : "origin (M:1)"
+Shipment }o--|| Location : "destination (M:1)"
+
+@enduml

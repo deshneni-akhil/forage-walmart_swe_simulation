@@ -1,0 +1,86 @@
+@startuml
+' Define classes and interfaces
+class DataProcessor {
+  - currentMode: ProcessingMode
+  - currentDatabase: Database
+  - modeFactory: ModeFactory
+  - dbFactory: DatabaseFactory
+  + configure(modeId: ModeIdentifier, dbId: DatabaseIdentifier)
+  + process(data: DataPoint)
+}
+
+interface ProcessingMode {
+  + process(data: DataPoint, db: Database)
+}
+
+class DumpMode {
+  + process(data: DataPoint, db: Database)
+}
+
+class PassthroughMode {
+  + process(data: DataPoint, db: Database)
+}
+
+class ValidateMode {
+  + process(data: DataPoint, db: Database)
+}
+
+interface Database {
+  + insert(data: DataPoint)
+  + validate(data: DataPoint): boolean
+}
+
+class PostgresDatabase {
+  + insert(data: DataPoint)
+  + validate(data: DataPoint): boolean
+}
+
+class RedisDatabase {
+  + insert(data: DataPoint)
+  + validate(data: DataPoint): boolean
+}
+
+class ElasticDatabase {
+  + insert(data: DataPoint)
+  + validate(data: DataPoint): boolean
+}
+
+enum ModeIdentifier {
+  DUMP
+  PASSTHROUGH
+  VALIDATE
+}
+
+enum DatabaseIdentifier {
+  POSTGRES
+  REDIS
+  ELASTIC
+}
+
+class ModeFactory {
+  + createMode(modeId: ModeIdentifier): ProcessingMode
+}
+
+class DatabaseFactory {
+  + createDatabase(dbId: DatabaseIdentifier): Database
+}
+
+' Relationships
+DataProcessor --> ProcessingMode
+DataProcessor --> Database
+DataProcessor --> ModeFactory
+DataProcessor --> DatabaseFactory
+
+ProcessingMode <|-- DumpMode
+ProcessingMode <|-- PassthroughMode
+ProcessingMode <|-- ValidateMode
+
+Database <|-- PostgresDatabase
+Database <|-- RedisDatabase
+Database <|-- ElasticDatabase
+
+ModeFactory ..> ModeIdentifier
+DatabaseFactory ..> DatabaseIdentifier
+
+DataProcessor ..> DataPoint : processes
+@enduml
